@@ -1,6 +1,6 @@
 package com.mrx
 
-import javax.swing.JFrame
+import javax.swing.table.DefaultTableModel
 
 object Main {
 
@@ -10,8 +10,13 @@ object Main {
             .loadJar("MXShell-1.0-all.jar")
             .loadJar("列车时刻表.jar")
             .load()
-        val frame = loader.getInstanceAndCastTo("com.mrx.train.ui.ServerUI", JFrame::class.java)
-        frame.isVisible = false
+        val model = loader.getInstanceAndCastTo(
+            "com.mrx.train.interfaces.MyTableModel",
+            DefaultTableModel::class.java,
+            arrayOf<String>()::class.java,
+            arrayOf("test", "测试")
+        )
+        println(model.getColumnName(0))
     }
 
 }
