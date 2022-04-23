@@ -44,13 +44,23 @@ class JarLoader private constructor(private val jars: Array<URL>) {
     }
 
     /**
+     * 效果与另一个重载方法相同
+     */
+    fun getInstanceOfClass(
+        clazz: String,
+        constructorArgsType: Class<*>? = null,
+        constructorArgs: Array<*>? = null
+    ) = getInstanceOfClass(loadClass(clazz), constructorArgsType, constructorArgs)
+
+
+    /**
      * 根据指定方法参数获取对应 class 实例
      * @param clazz Class<*> 要获取实例的 class
      * @param constructorArgsType Class<*>? 构造方法参数类型
      * @param constructorArgs Array<*>? 构造方法参数
      * @return Any class 实例
      */
-    private fun getInstanceOfClass(
+    fun getInstanceOfClass(
         clazz: Class<*>,
         constructorArgsType: Class<*>? = null,
         constructorArgs: Array<*>? = null
@@ -64,6 +74,19 @@ class JarLoader private constructor(private val jars: Array<URL>) {
                 isAccessible = true
             }.newInstance(constructorArgs)
         }
+    }
+
+    inline fun <reified T> getInstanceAndCastTo(
+        clazz: String,
+        target: Class<T>,
+        constructorArgsType: Class<*>? = null,
+        constructorArgs: Array<*>? = null
+    ): T {
+        val instance = getInstanceOfClass(clazz, constructorArgsType, constructorArgs)
+        if (instance is T) {
+            return getInstanceOfClass(loadClass(clazz), constructorArgsType, constructorArgs) as T
+        }
+        throw ClassCastException("造型失败, ${instance.javaClass} 无法被造型为 $target")
     }
 
     /**
